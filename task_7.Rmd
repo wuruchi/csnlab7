@@ -1,0 +1,261 @@
+---
+title: 'Complex and Social Networks: Lab session 7'
+subtitle: 'Simulation of SIS model over networks'
+output:
+  pdf_document:
+    fig_crop: no
+    fig_height: 4
+    number_sections: yes
+    toc: yes
+  html_document:
+    toc: yes
+author: Wilmer Uruchi & Egon Ferri
+urlcolor: blue
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = F)
+```
+
+```{r message=FALSE, warning=FALSE}
+require(igraph, quietly = T)
+require(viridis, quietly = T)
+require(kableExtra,quietly = T)
+```
+
+```{r}
+simulation<- function(graph,p_0=0.2, step=100,
+                      beta=0.1, gamma= 0.1, simp=T){
+  
+  time_serie<-c()
+  nodes<-(V(graph))
+  n<-length(nodes)
+  x_0<-rep(p_0,n)
+
+  x<-x_0
+  adjacency_matrix<-as_adj(graph)
+  
+  time_serie[1]<-sum(x)
+  
+  
+  for (s in 2:step) {
+
+    if (simp==T) {
+      sigma<-prod(1-(x*beta*adjacency_matrix[1,])[which(adjacency_matrix[1,]!=0)])
+    }else{
+      sigma=c()
+      for (i in 1:1000) {
+        sigma[i]<-prod(1-(x*beta*adjacency_matrix[i,])[which(adjacency_matrix[i,]!=0)])}
+      
+    }
+    
+    x_new<-1-(1-(1-gamma)*x)*sigma
+    x<-x_new
+    infected<- sum(x)
+
+    time_serie[s]<-infected
+    
+  }
+  
+  return(time_serie)
+}
+```
+
+# Introduction
+
+In this session we will have to simulate the spreading of a disease in the SIS model and check that the epidemic threshold for arbitrary networks is indeed $\frac{1}{\lambda}$ as forecast by [Chakrabarti et al., 2008].
+In particular, we consider the spreading of the disease following these rules at each time step:
+
+  * An infected node recovers with probability $\gamma$
+  * An infected node attemps to infect each neighbor with probability $\beta$
+
+Initially, only a random fraction $p_0$ of nodes are infected.
+
+# Methods
+
+## Models 
+
+### Base
+
+The model that we use to simulate is the following:
+
+  * Let $x_i(t)$ be the probability that node i is infected at time t
+  * Let $\zeta_i(t)$ be the probability that a node i will not receive
+infections from its neighbors in the next time step.
+
+$$
+\begin{aligned} \zeta_{i}(t) &=\prod_{j: i-j} \overbrace{x_{j}(t-1)(1-\beta)}^{j \text { fails to pass infection }}+\overbrace{\left(1-x_{j}(t-1)\right)}^{j \text { is not infected }} \\ &=\prod_{j: i-j} 1-x_{j}(t-1) \beta \end{aligned}
+$$
+
+$$
+x_{i}(t)=1-\left(1-(1-\gamma) x_{i}(t-1)\right) \zeta_{i}(t)
+$$
+Finally, the fraction of infecteds is computed as:
+
+$$
+x(t)=\sum_{i} x_{i}(t)
+$$
+
+### Simplified
+
+In some cases, we can use a simplified version of the model, since if the graph is [regular](https://en.wikipedia.org/wiki/Regular_graph) is easy to see that $x_i$ is the same $\forall i$, and the same is true for $\zeta_i$.
+
+So we can speed up the calculation without loosing information.
+
+For example, using a regular undirected lattice with $1000$ nodes and $1$ neigbor, we can take a glance to result obtained with the same set of parameters, both with the base and the simplified model.
+
+
+```{r}
+graph<-make_lattice(1000,circular = T, nei = 1,directed = F)
+
+```
+
+
+```{r warning=FALSE}
+par(mfrow=c(1,2))
+
+res<-simulation(graph = graph, step = 100, beta = 0.3, gamma=0.5,simp = T)
+
+plot(res, type='l', ylim=c(0,400), col='gold', lwd=3, main = 'Simplified model', xlab = 'Time', ylab='Infected nodes')
+
+res<-simulation(graph = graph, step = 100, beta = 0.3, gamma=0.5,simp = F)
+plot(res, type='l', ylim=c(0,400), col='gold', lwd=3, main = 'Base model', xlab = 'Time', ylab='Infected nodes')
+```
+
+
+## Ensamble of graphs
+
+All the networks have $1000$ nodes, and are connected.
+
+We calculate here the max eigenvalue and the treshold ($\frac{1}{\lambda_1}$) that we'll need in the tasks.
+
+```{r}
+get_stat<- function(graph){
+  eig=eigen(as_adj(graph),only.values = T)
+  l_eig=max(eig$values)
+  trash=1/l_eig
+  nedges=length(E(graph))
+  k<-mean(degree(graph))
+  
+  res<-c(nedges, l_eig, trash, k)
+  return(res)
+}
+```
+
+
+
+
+```{r}
+
+graph_lattice_1<-make_lattice(1000, nei=1,directed = F, circular = T)
+graph_lattice_2<-make_lattice(1000, nei=2,directed = F, circular = T)
+erdos_renyi_1<-erdos.renyi.game(1000,p.or.m = 0.015,directed = F)
+erdos_renyi_2<-erdos.renyi.game(1000,p.or.m = 0.1,directed = F)
+barabasi_albert<-barabasi.game(n = 1000, power = 2, directed = F,start.graph = make_lattice(100, nei=1, directed=F, circular = T), m = 56)
+full<-make_full_graph(1000)
+```
+
+
+
+```{r}
+graphs<-data.frame(row.names =c('Number of edges', 'Leading eigenvalue', 'Trashold', 'Mean degree'))
+
+
+graphs['Lattice with 1 neighbor']<-get_stat(graph_lattice_1)
+graphs['Lattice with 2 neighbor']<-get_stat(graph_lattice_2)
+graphs['Erdos renyi with p=0.015']<-get_stat(erdos_renyi_1)
+graphs['Erdos renyi with p=0.1']<-get_stat(erdos_renyi_2)
+graphs['Barabasi albert']<-get_stat(barabasi_albert)
+graphs['Complete graph']<-get_stat(full)
+```
+
+```{r}
+kable(t(graphs), format = "latex",  booktabs = T, caption = 'Data') %>%
+  kable_styling(bootstrap_options = c("striped", "condensed"), latex_options = 'HOLD_position')
+
+#kable(t(graphs)) uncomment if you want to visualize this table while working on the rmakrdown (cuz the other code is for better visualization in the report)
+```
+
+Note: everything in the construction of the graphs is standard. For Barabasi albert we used as a starting point a lattice of $100$ nodes, and we added 56 edges each time to have a number of edges similar to the second erdos renyi graph, for comparison. We also specified a power of 2 for the preferential attachment to get a strong effect that could help us enfasyze results.
+
+
+# Results
+
+## Task 1: what network is more prone to epidemic?
+
+
+We decided to leave $p_0$ fixed, and inspect the behaviour at first by changing $\beta$ with $\gamma$ fixed, and than doing the opposite.
+
+### Modeling with different betas
+
+```{r}
+changing_beta<-function(graph, title, simp=T){
+  eig=eigen(as_adj(graph),only.values = T)
+  l_eig=max(eig$values)
+  trash=1/l_eig
+  
+  gamma<-0.5
+  
+  beta_1<-0.0001
+  beta_2<-0.001
+  beta_3<-0.01
+  beta_4<-0.1
+  beta_5<-0.25
+  beta_6<-0.5
+  
+  betas<-c(beta_2,beta_3, beta_4, beta_5,beta_6)
+  
+  colors=viridis(6)
+  res<-simulation(graph = graph, step = 15, beta = beta_1, gamma=gamma,simp = simp)
+  plot(res, type='l', ylim=c(0,1000), col=colors[1], lwd=3, main = title, xlab = 'Time', ylab='Infected nodes')
+  
+  for (i in 1:5) {
+    
+    res<-simulation(graph = graph, step =15, beta = betas[i], gamma=gamma,simp = simp)
+    lines(res, col=colors[i+1], lwd=3)
+    
+  }
+  legend("topleft", legend=c(beta_1,betas),
+       col=colors[1:6], lwd=3)
+}
+```
+
+```{r fig.height=8}
+par(mfrow=c(3,2))
+changing_beta(graph_lattice_1, 'Lattice with 1 neig')
+changing_beta(graph_lattice_2, 'Lattice with 2 neig')
+changing_beta(erdos_renyi_1, 'Erdos renyi p=0.015', simp=F)
+changing_beta(erdos_renyi_2, 'Erdos renyi p=0.1', simp=F)
+changing_beta(barabasi_albert, 'Barabasi Albert', simp=F)
+changing_beta(full, 'Complete graph')
+```
+
+As we expect, more dense networks are more epidemic-prone.
+
+An interesting thing to notice is that the degree distribution does not seems to affect the behaviour of the spread, since, an erdos renyi graph and an Albert Barabasi graph (with strong preferential attachment) seems to have almost the same resistence to the virus, ceteris paribus.
+
+### Modeling with different gammas
+
+----TODO WILMER 
+
+here you only have to do the same that i did for betas, but trying different gammas
+
+
+
+
+## Task 2: are simulation results consistent with theory trasholds?
+
+----TODO WILMER 
+
+I already calculated the theoretical trashold, here you have to produce plots similiar to the task 1 by fixing p_0 and gamma but modeling the different betas around the beta that guarantees the treshold 
+
+for example in the first graph the treshold is 0.5 so if we fix as gamma 0.5, we have the "threshold beta" =0.25, so we can maybe plot three curves, one with beta 0.25, and one with beta 0.2 and 0.3
+
+i took only a first glance but seems that the treshold is not a "heavy" cut, a little bit under the trashold we still have epidemic behaviour but only a few nodes stay infected.
+
+
+# Discussion
+
+---TODO Wilmer 
+
+comment results
