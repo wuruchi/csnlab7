@@ -349,7 +349,7 @@ For our subjects we have that:
 
 We have already seen that $\beta = 0.5$ guarantees the threshold in all instances considered for experimentation; however, this might imply $\gamma = 1$ for some instances, which in turn implies a too high probability of recovering. So, we will change the value of $\beta$ for each subject so we do not come into situations where $\gamma \geq 1$, then we pick two values for $\gamma$ one that takes $\frac{\beta}{\gamma}$ slightly above the threshold and one slightly below.
 
-# Lattice with 1 neighbor
+### Lattice with 1 neighbor
 
 
 ```{r}
@@ -378,7 +378,7 @@ testing_threshold(graph_lattice_1, 'Lattice with 1 neig above threshold', beta=0
 testing_threshold(graph_lattice_1, 'Lattice with 1 neig below threshold', beta=0.25, gamma=0.7)
 ```
 
-# Lattice with 2 neighbor
+### Lattice with 2 neighbor
 For $\frac{1}{\lambda_1} = 0.25$
 
 'Lattice with 2 neig above threshold' has $\beta = 0.25$, $\gamma =0.8$ which results in $\frac{\beta}{\gamma} = 0.3125$
@@ -391,7 +391,7 @@ testing_threshold(graph_lattice_2, 'Lattice with 2 neig above threshold', beta=0
 testing_threshold(graph_lattice_2, 'Lattice with 2 neig below threshold', beta=0.15, gamma=0.9)
 ```
 
-# Erdos-Renyi with p=0.015
+### Erdos-Renyi with p=0.015
 For $\frac{1}{\lambda_1} = 0.0627063$
 
 'Erdos-Renyi with p=0.015' has $\beta = 0.01$, $\gamma =0.1$ which results in $\frac{\beta}{\gamma} = 0.1$
@@ -404,7 +404,7 @@ testing_threshold(erdos_renyi_1, 'Erdos-Renyi with p=0.015 above threshold', bet
 testing_threshold(erdos_renyi_1, 'Erdos-Renyi with p=0.015 below threshold', beta=0.01, gamma=0.2, simp = F)
 ```
 
-# Erdos-Renyi with p=0.1
+### Erdos-Renyi with p=0.1
 For $\frac{1}{\lambda_1} = 0.0098473$
 
 'Erdos-Renyi with p=0.1' has $\beta = 0.001$, $\gamma =0.07$ which results in $\frac{\beta}{\gamma} = 0.01428$,
@@ -417,7 +417,7 @@ testing_threshold(erdos_renyi_2, 'Erdos-Renyi with p=0.1 above threshold', beta=
 testing_threshold(erdos_renyi_2, 'Erdos-Renyi with p=0.1 below threshold', beta=0.001, gamma=0.15, simp = F)
 ```
 
-# Barabasi-Albert
+### Barabasi-Albert
 For $\frac{1}{\lambda_1} = 0.0052289$
 
 'Erdos-Renyi with p=0.1' has $\beta = 0.001$, $\gamma =0.15$ which results in $\frac{\beta}{\gamma} = 0.00667$
@@ -430,7 +430,7 @@ testing_threshold(barabasi_albert, 'Barabasi-Albert above threshold', beta=0.001
 testing_threshold(barabasi_albert, 'Barabasi-Albert below threshold', beta=0.001, gamma=0.22, simp = F)
 ```
 
-# Complete Graph
+### Complete Graph
 For $\frac{1}{\lambda_1} = 0.001001$
 
 'Complete Graph' using $\beta = 0.0009$, $\gamma =0.8$ which results in $\frac{\beta}{\gamma} = 0.001125$
