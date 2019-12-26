@@ -237,7 +237,7 @@ An interesting thing to notice is that the degree distribution does not seems to
 
 For this experiment we are leaving $p_0$ fixed as in the previous experiment. In a first attempt we use $\beta = 0.5$ and try with different $\gamma$, then we try again with $\beta = 0.5$ and the $\gamma$ values as before.
 
-## For $\beta = 0.5$
+### For $\beta = 0.5$
 
 We are trying $\beta = 0.5$ because it gave the best result in the previous experiment.
 
@@ -283,7 +283,7 @@ changing_gamma(barabasi_albert, 'Barabasi Albert', simp=F)
 changing_gamma(full, 'Complete graph')
 ```
 
-## For $\beta = 0.25$
+### For $\beta = 0.25$
 
 Since $\beta = 0.5$ did not produce much variation for different $\gamma$, we are now trying the second best result $\beta = 0.1$
 
