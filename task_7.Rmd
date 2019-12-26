@@ -400,8 +400,8 @@ For $\frac{1}{\lambda_1} = 0.0627063$
 
 ```{r}
 par(mfrow=c(1,2))
-testing_threshold(erdos_renyi_1, 'Erdos-Renyi with p=0.015 above threshold', beta=0.01, gamma=0.1)
-testing_threshold(erdos_renyi_1, 'Erdos-Renyi with p=0.015 below threshold', beta=0.01, gamma=0.2)
+testing_threshold(erdos_renyi_1, 'Erdos-Renyi with p=0.015 above threshold', beta=0.01, gamma=0.1, simp = F)
+testing_threshold(erdos_renyi_1, 'Erdos-Renyi with p=0.015 below threshold', beta=0.01, gamma=0.2, simp = F)
 ```
 
 # Erdos-Renyi with p=0.1
@@ -413,8 +413,8 @@ For $\frac{1}{\lambda_1} = 0.0098473$
 
 ```{r}
 par(mfrow=c(1,2))
-testing_threshold(erdos_renyi_2, 'Erdos-Renyi with p=0.1 above threshold', beta=0.001, gamma=0.07)
-testing_threshold(erdos_renyi_2, 'Erdos-Renyi with p=0.1 below threshold', beta=0.001, gamma=0.15)
+testing_threshold(erdos_renyi_2, 'Erdos-Renyi with p=0.1 above threshold', beta=0.001, gamma=0.07, simp = F)
+testing_threshold(erdos_renyi_2, 'Erdos-Renyi with p=0.1 below threshold', beta=0.001, gamma=0.15, simp = F)
 ```
 
 # Barabasi-Albert
@@ -426,8 +426,8 @@ For $\frac{1}{\lambda_1} = 0.0052289$
 
 ```{r}
 par(mfrow=c(1,2))
-testing_threshold(barabasi_albert, 'Barabasi-Albert above threshold', beta=0.001, gamma=0.15)
-testing_threshold(barabasi_albert, 'Barabasi-Albert below threshold', beta=0.001, gamma=0.22)
+testing_threshold(barabasi_albert, 'Barabasi-Albert above threshold', beta=0.001, gamma=0.15, simp = F)
+testing_threshold(barabasi_albert, 'Barabasi-Albert below threshold', beta=0.001, gamma=0.22, simp = F)
 ```
 
 # Complete Graph
