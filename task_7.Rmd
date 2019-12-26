@@ -284,6 +284,7 @@ changing_gamma(full, 'Complete graph')
 ```
 
 ## For $\beta = 0.25$
+
 Since $\beta = 0.5$ did not produce much variation for different $\gamma$, we are now trying the second best result $\beta = 0.1$
 
 ```{r}
@@ -334,12 +335,17 @@ We have that if $\frac{\beta}{\gamma} > \frac{1}{\lambda_1}$ then the epidemic o
 
 For our subjects we have that:
 
-1. Lattice with 1 neighbor using $\lambda_1 = 2 \implies \frac{\beta}{\gamma} > threshold = 0.5 $
-2. Lattice with 2 neighbor using $\lambda_1 = 4 \implies \frac{\beta}{\gamma} > threshold = 0.25 $
-3. Erdos-Renyi with p=0.015 using $\lambda_1 = 15.94737 \implies \frac{\beta}{\gamma} > threshold = 0.0627063 $
-4. Erdos-Renyi with p=0.1 using $\lambda_1 = 101.55027 \implies \frac{\beta}{\gamma} > threshold = 0.0098473 $
-5. Barabasi-Albert model using $\lambda_1 = 191.24417 \implies \frac{\beta}{\gamma} > threshold = 0.0052289 $
-6. Complete Graph model using $\lambda_1 = 999 \implies \frac{\beta}{\gamma} > threshold = 0.0010010 $
+1. Lattice with 1 neighbor using $\lambda = 2 \implies \frac{\beta}{\gamma} > threshold = 0.5$
+
+2. Lattice with 2 neighbor using $\lambda_1 = 4 \implies \frac{\beta}{\gamma} > threshold = 0.25$
+
+3. Erdos-Renyi with p=0.015 using $\lambda_1 = 15.94737 \implies \frac{\beta}{\gamma} > threshold = 0.0627063$
+
+4. Erdos-Renyi with p=0.1 using $\lambda_1 = 101.55027 \implies \frac{\beta}{\gamma} > threshold = 0.0098473$
+
+5. Barabasi-Albert model using $\lambda_1 = 191.24417 \implies \frac{\beta}{\gamma} > threshold = 0.0052289$
+
+6. Complete Graph model using $\lambda_1 = 999 \implies \frac{\beta}{\gamma} > threshold = 0.0010010$
 
 We have already seen that $\beta = 0.5$ guarantees the threshold in all instances considered for experimentation; however, this might imply $\gamma = 1$ for some instances, which in turn implies a too high probability of recovering. So, we will change the value of $\beta$ for each subject so we do not come into situations where $\gamma \geq 1$, then we pick two values for $\gamma$ one that takes $\frac{\beta}{\gamma}$ slightly above the threshold and one slightly below.
 
@@ -358,12 +364,15 @@ testing_threshold <- function(graph, title, beta, gamma, simp=T){
 }
 ```
 
+
 For $\frac{1}{\lambda_1} = 0.5$
-'Lattice with 1 neig above threshold' using $\beta = 0.25$ $\gamma =0.3$ that results in $\frac{\beta}{\gamma} = 0.8333$
-'Lattice with 1 neig below threshold' using $\beta = 0.25$ $\gamma =0.7$ that results in $\frac{\beta}{\gamma} = 0.3571$
+
+'Lattice with 1 neig above threshold' using $\beta = 0.25$, $\gamma =0.3$ that results in $\frac{\beta}{\gamma} = 0.8333$
+
+'Lattice with 1 neig below threshold' using $\beta = 0.25$, $\gamma =0.7$ that results in $\frac{\beta}{\gamma} = 0.3571$
 
 
-```{r fig.height=8}
+```{r}
 par(mfrow=c(1,2))
 testing_threshold(graph_lattice_1, 'Lattice with 1 neig above threshold', beta=0.25, gamma=0.3)
 testing_threshold(graph_lattice_1, 'Lattice with 1 neig below threshold', beta=0.25, gamma=0.7)
@@ -371,10 +380,12 @@ testing_threshold(graph_lattice_1, 'Lattice with 1 neig below threshold', beta=0
 
 # Lattice with 2 neighbor
 For $\frac{1}{\lambda_1} = 0.25$
-'Lattice with 2 neig above threshold' has $\beta = 0.25$ $\gamma =0.8$ which results in $\frac{\beta}{\gamma} = 0.3125$
-'Lattice with 2 neig below threshold' has $\beta = 0.15$ $\gamma =0.9$ which results in $\frac{\beta}{\gamma} = 0.1667$
 
-```{r fig.height=8}
+'Lattice with 2 neig above threshold' has $\beta = 0.25$, $\gamma =0.8$ which results in $\frac{\beta}{\gamma} = 0.3125$
+
+'Lattice with 2 neig below threshold' has $\beta = 0.15$, $\gamma =0.9$ which results in $\frac{\beta}{\gamma} = 0.1667$
+
+```{r}
 par(mfrow=c(1,2))
 testing_threshold(graph_lattice_2, 'Lattice with 2 neig above threshold', beta=0.25, gamma=0.8)
 testing_threshold(graph_lattice_2, 'Lattice with 2 neig below threshold', beta=0.15, gamma=0.9)
@@ -382,10 +393,12 @@ testing_threshold(graph_lattice_2, 'Lattice with 2 neig below threshold', beta=0
 
 # Erdos-Renyi with p=0.015
 For $\frac{1}{\lambda_1} = 0.0627063$
-'Erdos-Renyi with p=0.015' has $\beta = 0.01$ $\gamma =0.1$ which results in $\frac{\beta}{\gamma} = 0.1$
-'Erdos-Renyi with p=0.015' has $\beta = 0.01$ $\gamma =0.2$ which results in $\frac{\beta}{\gamma} = 0.05$
 
-```{r fig.height=8}
+'Erdos-Renyi with p=0.015' has $\beta = 0.01$, $\gamma =0.1$ which results in $\frac{\beta}{\gamma} = 0.1$
+
+'Erdos-Renyi with p=0.015' has $\beta = 0.01$, $\gamma =0.2$ which results in $\frac{\beta}{\gamma} = 0.05$
+
+```{r}
 par(mfrow=c(1,2))
 testing_threshold(erdos_renyi_1, 'Erdos-Renyi with p=0.015 above threshold', beta=0.01, gamma=0.1)
 testing_threshold(erdos_renyi_1, 'Erdos-Renyi with p=0.015 below threshold', beta=0.01, gamma=0.2)
@@ -393,10 +406,12 @@ testing_threshold(erdos_renyi_1, 'Erdos-Renyi with p=0.015 below threshold', bet
 
 # Erdos-Renyi with p=0.1
 For $\frac{1}{\lambda_1} = 0.0098473$
-'Erdos-Renyi with p=0.1' has $\beta = 0.001$ $\gamma =0.07$ which results in $\frac{\beta}{\gamma} = 0.01428$
-'Erdos-Renyi with p=0.1' has $\beta = 0.001$ $\gamma =0.15$ which results in $\frac{\beta}{\gamma} = 0.00667$
 
-```{r fig.height=8}
+'Erdos-Renyi with p=0.1' has $\beta = 0.001$, $\gamma =0.07$ which results in $\frac{\beta}{\gamma} = 0.01428$,
+
+'Erdos-Renyi with p=0.1' has $\beta = 0.001$, $\gamma =0.15$ which results in $\frac{\beta}{\gamma} = 0.00667$
+
+```{r}
 par(mfrow=c(1,2))
 testing_threshold(erdos_renyi_2, 'Erdos-Renyi with p=0.1 above threshold', beta=0.001, gamma=0.07)
 testing_threshold(erdos_renyi_2, 'Erdos-Renyi with p=0.1 below threshold', beta=0.001, gamma=0.15)
@@ -404,10 +419,12 @@ testing_threshold(erdos_renyi_2, 'Erdos-Renyi with p=0.1 below threshold', beta=
 
 # Barabasi-Albert
 For $\frac{1}{\lambda_1} = 0.0052289$
-'Erdos-Renyi with p=0.1' has $\beta = 0.001$ $\gamma =0.15$ which results in $\frac{\beta}{\gamma} = 0.00667$
-'Erdos-Renyi with p=0.1' has $\beta = 0.001$ $\gamma =0.22$ which results in $\frac{\beta}{\gamma} = 0.00454$
 
-```{r fig.height=8}
+'Erdos-Renyi with p=0.1' has $\beta = 0.001$, $\gamma =0.15$ which results in $\frac{\beta}{\gamma} = 0.00667$
+
+'Erdos-Renyi with p=0.1' has $\beta = 0.001$, $\gamma =0.22$ which results in $\frac{\beta}{\gamma} = 0.00454$
+
+```{r}
 par(mfrow=c(1,2))
 testing_threshold(barabasi_albert, 'Barabasi-Albert above threshold', beta=0.001, gamma=0.15)
 testing_threshold(barabasi_albert, 'Barabasi-Albert below threshold', beta=0.001, gamma=0.22)
@@ -415,10 +432,12 @@ testing_threshold(barabasi_albert, 'Barabasi-Albert below threshold', beta=0.001
 
 # Complete Graph
 For $\frac{1}{\lambda_1} = 0.001001$
-'Complete Graph' using $\beta = 0.0009$ $\gamma =0.8$ which results in $\frac{\beta}{\gamma} = 0.001125$
-'Complete Graph' using $\beta = 0.0009$ $\gamma =0.95$ which results in $\frac{\beta}{\gamma} = 0.000947$
 
-```{r fig.height=8}
+'Complete Graph' using $\beta = 0.0009$, $\gamma =0.8$ which results in $\frac{\beta}{\gamma} = 0.001125$
+
+'Complete Graph' using $\beta = 0.0009$, $\gamma =0.95$ which results in $\frac{\beta}{\gamma} = 0.000947$
+
+```{r}
 par(mfrow=c(1,2))
 testing_threshold(full, 'Complete Graph above threshold', beta=0.0009, gamma=0.8)
 testing_threshold(full, 'Complete Graph below threshold', beta=0.0009, gamma=0.95)
@@ -430,7 +449,3 @@ For changing $\gamma$, we can see that it has a noticeable effect in graph that 
 
 While experiment with the threshold $\frac{1}{\lambda_1}$ we can see that the closer we get to the threshold, from above or below, the harder it is to determine a difference visually. In some cases we see that the chart shows a downwards tendency, as if the threshold were not tight enough, and that might a plausible point; however, lets remember that the definition of epidemic does not state that the 'sicknes' should spread to the whole population but to a significant portion. In our experimentation we see that for those tests 'slightly' above the threshold, this definition holds and the agent (or sickness) has spread to significant fraction of the population after the given iterations, then, the more the positive difference between the threshold and the value used, the higher the fraction of the population infected.
 
-
-
-
-comment results
