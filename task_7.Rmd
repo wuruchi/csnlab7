@@ -63,7 +63,7 @@ simulation<- function(graph,p_0=0.2, step=100,
 
 # Introduction
 
-In this session we will have to simulate the spreading of a disease in the SIS model and check that the epidemic threshold for arbitrary networks is indeed $\frac{1}{\lambda}$ as forecast by [Chakrabarti et al., 2008].
+In this session we will simulate the spreading of a disease in the SIS model and check that the epidemic threshold for arbitrary networks is indeed $\frac{1}{\lambda}$ as forecasted by [Chakrabarti et al., 2008].
 In particular, we consider the spreading of the disease following these rules at each time step:
 
   * An infected node recovers with probability $\gamma$
@@ -127,7 +127,7 @@ plot(res, type='l', ylim=c(0,400), col='gold', lwd=3, main = 'Base model', xlab 
 
 All the networks have $1000$ nodes, and are connected.
 
-We calculate here the max eigenvalue and the treshold ($\frac{1}{\lambda_1}$) that we'll need in the tasks.
+We calculate here the max eigenvalue and the threshold ($\frac{1}{\lambda_1}$) that we'll need in the tasks.
 
 ```{r}
 get_stat<- function(graph){
@@ -176,15 +176,14 @@ kable(t(graphs), format = "latex",  booktabs = T, caption = 'Data') %>%
 #kable(t(graphs)) uncomment if you want to visualize this table while working on the rmakrdown (cuz the other code is for better visualization in the report)
 ```
 
-Note: everything in the construction of the graphs is standard. For Barabasi albert we used as a starting point a lattice of $100$ nodes, and we added 56 edges each time to have a number of edges similar to the second erdos renyi graph, for comparison. We also specified a power of 2 for the preferential attachment to get a strong effect that could help us enfasyze results.
+Note: everything in the construction of the graphs is standard. For Barabasi-Albert we used as a starting point a lattice of $100$ nodes, and we added 56 edges each time to have a number of edges similar to the second Erdos-Renyi graph, for comparison. We also specified a $\gamma = 2$ for the preferential attachment model to get a strong effect that could help us emphasize results.
 
 
 # Results
 
 ## Task 1: what network is more prone to epidemic?
 
-
-We decided to leave $p_0$ fixed, and inspect the behaviour at first by changing $\beta$ with $\gamma$ fixed, and than doing the opposite.
+We decided to leave $p_0$ fixed, and inspect the behaviour at first by changing $\beta$ with $\gamma$ fixed, and then doing the opposite in the next step.
 
 ### Modeling with different betas
 
@@ -232,30 +231,206 @@ changing_beta(full, 'Complete graph')
 
 As we expect, more dense networks are more epidemic-prone.
 
-An interesting thing to notice is that the degree distribution does not seems to affect the behaviour of the spread, since, an erdos renyi graph and an Albert Barabasi graph (with strong preferential attachment) seems to have almost the same resistence to the virus, ceteris paribus.
+An interesting thing to notice is that the degree distribution does not seems to affect the behaviour of the spread, since, an Erdos-Renyi graph and an Barabasi-Albert graph (with strong preferential attachment) seems to have almost the same resistence to the virus, ceteris paribus.
 
 ### Modeling with different gammas
 
-----TODO WILMER 
+For this experiment we are leaving $p_0$ fixed as in the previous experiment. In a first attempt we use $\beta = 0.5$ and try with different $\gamma$, then we try again with $\beta = 0.5$ and the $\gamma$ values as before.
 
-here you only have to do the same that i did for betas, but trying different gammas
+## For $\beta = 0.5$
+
+We are trying $\beta = 0.5$ because it gave the best result in the previous experiment.
+
+```{r}
+changing_gamma <- function(graph, title, simp=T){
+  eig=eigen(as_adj(graph),only.values = T)
+  l_eig=max(eig$values)
+  trash=1/l_eig
+  
+  beta<-0.5
+  
+  gamma_1<-0.0001
+  gamma_2<-0.001
+  gamma_3<-0.01
+  gamma_4<-0.1
+  gamma_5<-0.25
+  gamma_6<-0.5
+  
+  gammas <- c(gamma_2,gamma_3, gamma_4, gamma_5, gamma_6)
+  
+  colors=viridis(6)
+  res<-simulation(graph = graph, step = 15, gamma = gamma_1, beta=beta,simp = simp)
+  plot(res, type='l', ylim=c(0,1000), col=colors[1], lwd=3, main = title, xlab = 'Time', ylab='Infected nodes')
+  
+  for (i in 1:5) {
+    
+    res<-simulation(graph = graph, step =15, gamma = gammas[i], beta=beta,simp = simp)
+    lines(res, col=colors[i+1], lwd=3)
+    
+  }
+  legend("topleft", legend=c(gamma_1,gammas),
+       col=colors[1:6], lwd=3)
+}
+```
+
+```{r fig.height=8}
+par(mfrow=c(3,2))
+changing_gamma(graph_lattice_1, 'Lattice with 1 neig')
+changing_gamma(graph_lattice_2, 'Lattice with 2 neig')
+changing_gamma(erdos_renyi_1, 'Erdos renyi p=0.015', simp=F)
+changing_gamma(erdos_renyi_2, 'Erdos renyi p=0.1', simp=F)
+changing_gamma(barabasi_albert, 'Barabasi Albert', simp=F)
+changing_gamma(full, 'Complete graph')
+```
+
+## For $\beta = 0.25$
+Since $\beta = 0.5$ did not produce much variation for different $\gamma$, we are now trying the second best result $\beta = 0.1$
+
+```{r}
+changing_gamma_2 <- function(graph, title, simp=T){
+  eig=eigen(as_adj(graph),only.values = T)
+  l_eig=max(eig$values)
+  trash=1/l_eig
+  
+  beta<-0.1
+  
+  gamma_1<-0.0001
+  gamma_2<-0.001
+  gamma_3<-0.01
+  gamma_4<-0.1
+  gamma_5<-0.25
+  gamma_6<-0.5
+  
+  gammas <- c(gamma_2,gamma_3, gamma_4, gamma_5, gamma_6)
+  
+  colors=viridis(6)
+  res<-simulation(graph = graph, step = 15, gamma = gamma_1, beta=beta,simp = simp)
+  plot(res, type='l', ylim=c(0,1000), col=colors[1], lwd=3, main = title, xlab = 'Time', ylab='Infected nodes')
+  
+  for (i in 1:5) {
+    
+    res<-simulation(graph = graph, step =15, gamma = gammas[i], beta=beta,simp = simp)
+    lines(res, col=colors[i+1], lwd=3)
+    
+  }
+  legend("topleft", legend=c(gamma_1,gammas),
+       col=colors[1:6], lwd=3)
+}
+```
+
+```{r fig.height=8}
+par(mfrow=c(3,2))
+changing_gamma_2(graph_lattice_1, 'Lattice with 1 neig')
+changing_gamma_2(graph_lattice_2, 'Lattice with 2 neig')
+changing_gamma_2(erdos_renyi_1, 'Erdos renyi p=0.015', simp=F)
+changing_gamma_2(erdos_renyi_2, 'Erdos renyi p=0.1', simp=F)
+changing_gamma_2(barabasi_albert, 'Barabasi Albert', simp=F)
+changing_gamma_2(full, 'Complete graph')
+```
+
+## Task 2: are simulation results consistent with theory thresholds?
+
+We have that if $\frac{\beta}{\gamma} > \frac{1}{\lambda_1}$ then the epidemic occurs.
+
+For our subjects we have that:
+
+1. Lattice with 1 neighbor using $\lambda_1 = 2 \implies \frac{\beta}{\gamma} > threshold = 0.5 $
+2. Lattice with 2 neighbor using $\lambda_1 = 4 \implies \frac{\beta}{\gamma} > threshold = 0.25 $
+3. Erdos-Renyi with p=0.015 using $\lambda_1 = 15.94737 \implies \frac{\beta}{\gamma} > threshold = 0.0627063 $
+4. Erdos-Renyi with p=0.1 using $\lambda_1 = 101.55027 \implies \frac{\beta}{\gamma} > threshold = 0.0098473 $
+5. Barabasi-Albert model using $\lambda_1 = 191.24417 \implies \frac{\beta}{\gamma} > threshold = 0.0052289 $
+6. Complete Graph model using $\lambda_1 = 999 \implies \frac{\beta}{\gamma} > threshold = 0.0010010 $
+
+We have already seen that $\beta = 0.5$ guarantees the threshold in all instances considered for experimentation; however, this might imply $\gamma = 1$ for some instances, which in turn implies a too high probability of recovering. So, we will change the value of $\beta$ for each subject so we do not come into situations where $\gamma \geq 1$, then we pick two values for $\gamma$ one that takes $\frac{\beta}{\gamma}$ slightly above the threshold and one slightly below.
+
+# Lattice with 1 neighbor
 
 
+```{r}
+testing_threshold <- function(graph, title, beta, gamma, simp=T){
+  eig=eigen(as_adj(graph),only.values = T)
+  l_eig=max(eig$values)
+  trash=1/l_eig
+
+  colors=viridis(6)
+  res<-simulation(graph = graph, step = 15, gamma = gamma, beta = beta,simp = simp)
+  plot(res, type='l', ylim=c(0,1000), col=colors[1], lwd=3, main = title, xlab = 'Time', ylab='Infected nodes')
+}
+```
+
+For $\frac{1}{\lambda_1} = 0.5$
+'Lattice with 1 neig above threshold' using $\beta = 0.25$ $\gamma =0.3$ that results in $\frac{\beta}{\gamma} = 0.8333$
+'Lattice with 1 neig below threshold' using $\beta = 0.25$ $\gamma =0.7$ that results in $\frac{\beta}{\gamma} = 0.3571$
 
 
-## Task 2: are simulation results consistent with theory trasholds?
+```{r fig.height=8}
+par(mfrow=c(1,2))
+testing_threshold(graph_lattice_1, 'Lattice with 1 neig above threshold', beta=0.25, gamma=0.3)
+testing_threshold(graph_lattice_1, 'Lattice with 1 neig below threshold', beta=0.25, gamma=0.7)
+```
 
-----TODO WILMER 
+# Lattice with 2 neighbor
+For $\frac{1}{\lambda_1} = 0.25$
+'Lattice with 2 neig above threshold' has $\beta = 0.25$ $\gamma =0.8$ which results in $\frac{\beta}{\gamma} = 0.3125$
+'Lattice with 2 neig below threshold' has $\beta = 0.15$ $\gamma =0.9$ which results in $\frac{\beta}{\gamma} = 0.1667$
 
-I already calculated the theoretical trashold, here you have to produce plots similiar to the task 1 by fixing p_0 and gamma but modeling the different betas around the beta that guarantees the treshold 
+```{r fig.height=8}
+par(mfrow=c(1,2))
+testing_threshold(graph_lattice_2, 'Lattice with 2 neig above threshold', beta=0.25, gamma=0.8)
+testing_threshold(graph_lattice_2, 'Lattice with 2 neig below threshold', beta=0.15, gamma=0.9)
+```
 
-for example in the first graph the treshold is 0.5 so if we fix as gamma 0.5, we have the "threshold beta" =0.25, so we can maybe plot three curves, one with beta 0.25, and one with beta 0.2 and 0.3
+# Erdos-Renyi with p=0.015
+For $\frac{1}{\lambda_1} = 0.0627063$
+'Erdos-Renyi with p=0.015' has $\beta = 0.01$ $\gamma =0.1$ which results in $\frac{\beta}{\gamma} = 0.1$
+'Erdos-Renyi with p=0.015' has $\beta = 0.01$ $\gamma =0.2$ which results in $\frac{\beta}{\gamma} = 0.05$
 
-i took only a first glance but seems that the treshold is not a "heavy" cut, a little bit under the trashold we still have epidemic behaviour but only a few nodes stay infected.
+```{r fig.height=8}
+par(mfrow=c(1,2))
+testing_threshold(erdos_renyi_1, 'Erdos-Renyi with p=0.015 above threshold', beta=0.01, gamma=0.1)
+testing_threshold(erdos_renyi_1, 'Erdos-Renyi with p=0.015 below threshold', beta=0.01, gamma=0.2)
+```
 
+# Erdos-Renyi with p=0.1
+For $\frac{1}{\lambda_1} = 0.0098473$
+'Erdos-Renyi with p=0.1' has $\beta = 0.001$ $\gamma =0.07$ which results in $\frac{\beta}{\gamma} = 0.01428$
+'Erdos-Renyi with p=0.1' has $\beta = 0.001$ $\gamma =0.15$ which results in $\frac{\beta}{\gamma} = 0.00667$
+
+```{r fig.height=8}
+par(mfrow=c(1,2))
+testing_threshold(erdos_renyi_2, 'Erdos-Renyi with p=0.1 above threshold', beta=0.001, gamma=0.07)
+testing_threshold(erdos_renyi_2, 'Erdos-Renyi with p=0.1 below threshold', beta=0.001, gamma=0.15)
+```
+
+# Barabasi-Albert
+For $\frac{1}{\lambda_1} = 0.0052289$
+'Erdos-Renyi with p=0.1' has $\beta = 0.001$ $\gamma =0.15$ which results in $\frac{\beta}{\gamma} = 0.00667$
+'Erdos-Renyi with p=0.1' has $\beta = 0.001$ $\gamma =0.22$ which results in $\frac{\beta}{\gamma} = 0.00454$
+
+```{r fig.height=8}
+par(mfrow=c(1,2))
+testing_threshold(barabasi_albert, 'Barabasi-Albert above threshold', beta=0.001, gamma=0.15)
+testing_threshold(barabasi_albert, 'Barabasi-Albert below threshold', beta=0.001, gamma=0.22)
+```
+
+# Complete Graph
+For $\frac{1}{\lambda_1} = 0.001001$
+'Complete Graph' using $\beta = 0.0009$ $\gamma =0.8$ which results in $\frac{\beta}{\gamma} = 0.001125$
+'Complete Graph' using $\beta = 0.0009$ $\gamma =0.95$ which results in $\frac{\beta}{\gamma} = 0.000947$
+
+```{r fig.height=8}
+par(mfrow=c(1,2))
+testing_threshold(full, 'Complete Graph above threshold', beta=0.0009, gamma=0.8)
+testing_threshold(full, 'Complete Graph below threshold', beta=0.0009, gamma=0.95)
+```
 
 # Discussion
 
----TODO Wilmer 
+For changing $\gamma$, we can see that it has a noticeable effect in graph that are not dense. The more dense the graph is, the higher the probability that a node is infected by any of its neighbors, so the probability of recovering does not have a stronger impact as it has in sparse graphs. It seems as an intuitive result but it is interesting to see it as a comparison in graphs whose structures we have already analyzed in previous works.
+
+While experiment with the threshold $\frac{1}{\lambda_1}$ we can see that the closer we get to the threshold, from above or below, the harder it is to determine a difference visually. In some cases we see that the chart shows a downwards tendency, as if the threshold were not tight enough, and that might a plausible point; however, lets remember that the definition of epidemic does not state that the 'sicknes' should spread to the whole population but to a significant portion. In our experimentation we see that for those tests 'slightly' above the threshold, this definition holds and the agent (or sickness) has spread to significant fraction of the population after the given iterations, then, the more the positive difference between the threshold and the value used, the higher the fraction of the population infected.
+
+
+
 
 comment results
